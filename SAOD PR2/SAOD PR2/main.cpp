@@ -34,7 +34,7 @@ int main()
 		mas[i].sum = mas[i].l1 + mas[i].l2 + mas[i].l3;
 	}
 
-	std::sort(&mas[0], &mas[0] + counter, [](const Student& st1, const Student& st2) {return st1.sum > st2.sum; });
+	std::sort(&mas[0], &mas[0] + counter, [](const auto& st1, const auto& st2) {return st1.sum > st2.sum; });
 
 	std::cout << "Фамилия Имя:" << "\t\t" << "l1" << "\t" << "l2" << "\t" << "l3" << std::endl;
 	for (int i = 0; i < counter; i++)
