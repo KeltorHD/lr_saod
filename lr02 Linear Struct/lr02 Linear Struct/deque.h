@@ -20,7 +20,7 @@ private:
 
 public:
 	/*konstr*/
-	Deque() {};
+	Deque() = default;
 	Deque(const Deque&);
 	Deque(Deque&&);
 	~Deque() { this->clear(); };
