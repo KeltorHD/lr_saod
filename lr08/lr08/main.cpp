@@ -5,8 +5,8 @@
 
 struct PartPolynom
 {
-	double c;
-	double e;
+	double c; /*коэффициент при x*/
+	double e; /*степень x*/
 
 	bool operator==(const PartPolynom& p)
 	{
@@ -40,7 +40,7 @@ int main()
 	std::cout << sum(polA, polB) << std::endl << std::endl;
 
 	std::cout << "Результат перемножения: " << std::endl;
-	std::cout<<multip(polA,polB) << std::endl << std::endl;
+	std::cout << multip(polA,polB) << std::endl << std::endl;
 
 	return bool(std::cout);
 }
@@ -91,7 +91,7 @@ List<PartPolynom> multip(const List<PartPolynom>& a, const List<PartPolynom>& b)
 	std::vector<double> tmp_v{}; /*вектор степеней, хранящихся в tmp*/
 
 	/*простое перемножение*/
-	for (size_t i = 0; i < a.length(); i++) /*сложение коэф. при одинаковых степенях*/
+	for (size_t i = 0; i < a.length(); i++)
 	{
 		for (size_t j = 0; j < b.length(); j++)
 		{
