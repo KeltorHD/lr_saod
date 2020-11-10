@@ -19,7 +19,8 @@ public:
 		count
 	};
 	void add(node_t type, std::string field);
-	bool find(const node_t& type, const std::string& field) const;
+	bool find(const std::string& field) const;
+	size_t count_element(const std::string& field) const;
 
 private:
 	struct node
@@ -35,5 +36,6 @@ private:
 	node* head;
 
 	void clear(node* to_delete);
-	bool find(const node_t& type, const std::string& field, node* in_find) const;
+	bool find(const std::string& field, node* in_find) const;
+	size_t count_element(const std::string& field, node* in_count) const;
 };

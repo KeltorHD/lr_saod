@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include <algorithm>
 #include "tree.h"
 #include "tr.h"
 
@@ -7,12 +9,17 @@ int main()
 {
 	system("chcp 65001>nul");
 	
-	std::ifstream ifs("data.txt");
-	
 	Tree tree;
-	load(ifs, tree);
+	auto v = load(tree);
 
-	first(ifs, tree);
+	std::sort(v.begin(), v.end());
+	v.erase(std::unique(v.begin(), v.end()), v.end());
+
+	first(tree, v);
+
+	std::cout << std::endl;
+
+	second(tree, v);
 
 	return 1;
 }

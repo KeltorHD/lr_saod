@@ -34,16 +34,26 @@ void Tree::add(node_t type, std::string field)
 	}
 }
 
-bool Tree::find(const node_t& type, const std::string& field) const
+bool Tree::find(const std::string& field) const
 {
 	bool isFind{ false };
 	for (size_t i = 0; i < this->head->next.size(); i++)
 	{
-		isFind = this->find(type, field, this->head->next[i]);
+		isFind = this->find(field, this->head->next[i]);
 		if (isFind)
 			return true;
 	}
 	return false;
+}
+
+size_t Tree::count_element(const std::string& field) const
+{
+	size_t count{};
+	for (size_t i = 0; i < this->head->next.size(); i++)
+	{
+		count += this->count_element(field, this->head->next[i]);
+	}
+	return count;
 }
 
 void Tree::clear(node* to_delete)
@@ -58,7 +68,7 @@ void Tree::clear(node* to_delete)
 	}
 }
 
-bool Tree::find(const node_t& type, const std::string& field, node* in_find) const
+bool Tree::find(const std::string& field, node* in_find) const
 {
 	if (in_find->field == field)
 	{
@@ -69,10 +79,23 @@ bool Tree::find(const node_t& type, const std::string& field, node* in_find) con
 		bool isFind{ false };
 		for (size_t i = 0; i < in_find->next.size(); i++)
 		{
-			isFind = this->find(type, field, in_find->next[i]);
+			isFind = this->find(field, in_find->next[i]);
 			if (isFind)
 				return true;
 		}
 		return false;
 	}
+}
+
+size_t Tree::count_element(const std::string& field, node* in_count) const
+{
+	size_t count{};
+	if (in_count->field == field)
+		count++;
+
+	for (size_t i = 0; i < in_count->next.size(); i++)
+	{
+		count += this->count_element(field, in_count->next[i]);
+	}
+	return count;
 }
