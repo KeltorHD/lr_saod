@@ -46,16 +46,16 @@ int main()
 	tree.print(std::cout);
 	std::cout << std::endl;
 
-	tree.remove({ 190,'f' });
+	/*tree.remove({ 190,'f' });
 	tree.print(std::cout);
-	std::cout << std::endl;
+	std::cout << std::endl;*/
 
-	/*for (size_t i = 0; i < length; i++)
+	for (size_t i = 0; i < length; i++)
 	{
 		tree.remove({ int(i),'f' });
 		tree.print(std::cout);
 		std::cout << std::endl;
-	}*/
+	}
 
 	return bool(std::cout);
 }
