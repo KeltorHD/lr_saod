@@ -2,153 +2,195 @@
 #include <fstream>
 #include <algorithm>
 
+#include "file_array.h"
+
+#include <chrono> // для функций из std::chrono
+
+class Timer
+{
+private:
+	// Псевдонимы типов используются для удобного доступа к вложенным типам
+	using clock_t = std::chrono::high_resolution_clock;
+	using second_t = std::chrono::duration<double, std::ratio<1> >;
+
+	std::chrono::time_point<clock_t> m_beg;
+
+public:
+	Timer() : m_beg(clock_t::now())
+	{
+	}
+
+	void reset()
+	{
+		m_beg = clock_t::now();
+	}
+
+	double elapsed() const
+	{
+		return std::chrono::duration_cast<second_t>(clock_t::now() - m_beg).count();
+	}
+};
+
 int main()
 {
 	/*подготовка*/
-	const int length{ 10 };
+	File_array<int> file("sort.bin");
+	File_array<int> tmp_1("tmp1.bin");
+	File_array<int> tmp_2("tmp2.bin");
+	const int length{ 10000 };
+	bool enable_steps{ false };
+	bool enable_mas{ false };
 
-	std::fstream file("sort.bin", std::ios::binary | std::ios::out | std::ios::in);
-	std::fstream tmp_1("tmp1.bin", std::ios::binary | std::ios::out | std::ios::in);
-	std::fstream tmp_2("tmp2.bin", std::ios::binary | std::ios::out | std::ios::in);
+	file.resize(length);
+	tmp_1.clear();
+	tmp_2.clear();
 
-	for (size_t i = 0; i < length; i++)
+	for (size_t i = 0; i < file.length(); i++)
 	{
-		int tmp = rand() % 10000;
-		file.write((char*)&tmp, sizeof(int));
+		file[i] = rand() % length;
 	}
-	file.seekg(0);
-	for (size_t i = 0; i < length; i++)
+	if (enable_steps)
 	{
-		int var;
-		file.read((char*)&var, sizeof(int));
-		std::cout << var << std::endl;
+		for (size_t i = 0; i < file.length(); i++)
+		{
+			std::cout << file[i] << " ";
+		}
+		std::cout << std::endl;
 	}
+
+	std::cout << "Sort start." << std::endl;
+	Timer t;
 
 	unsigned long long ser{ 1 };
 
-	while (ser <= length)
+
+	/*сортировка*/
+	while (ser < length) /*пока серия не сравнится с длиной*/
 	{
-		for (size_t i = 0; i < length / ser; i++)
+		size_t i;
+		for (i = 0; i < length / ser; i++) /*разделяем файлик на серии*/
 		{
 			if (i % 2 == 0)
 			{
-				for (size_t j = 0; j < ser; j++)
+				for (size_t j = 0; j < ser && (i * ser + j < file.length()); j++)
 				{
-					int var{}; 
-					file.seekg((i + j * ser) * sizeof(int));
-					file.read((char*)&var, sizeof(int));
-					tmp_1.write((char*)&var, sizeof(int));
+					tmp_1.push_back(file[i * ser + j]);
 				}
 			}
 			else
 			{
-				for (size_t j = 0; j < ser; j++)
+				for (size_t j = 0; j < ser && (i * ser + j < file.length()); j++)
 				{
-					int var{};
-					file.seekg((i + j * ser) * sizeof(int));
-					file.read((char*)&var, sizeof(int));
-					tmp_2.write((char*)&var, sizeof(int));
+					tmp_2.push_back(file[i * ser + j]);
 				}
 			}
 		}
-		file.seekg(0);
-		tmp_1.seekg(0);
-		tmp_2.seekg(0);
-		std::cout << "tmp1 ";
-		for (size_t i = 0; i < length / 2; i++)
+		for (size_t j = i * ser; j < length; j++)
 		{
-			int var;
-			tmp_1.read((char*)&var, sizeof(int));
-			std::cout << var << " ";
-		}
-		std::cout << "\ntmp2 ";
-		for (size_t i = 0; i < length / 2; i++)
-		{
-			int var;
-			tmp_2.read((char*)&var, sizeof(int));
-			std::cout << var << " ";
-		}
-		std::cout << "\n";
-		tmp_1.seekg(0);
-		tmp_2.seekg(0);
-
-		int left{}, rigth{};
-		int var_1{}, var_2{};
-		int min_file = 0;
-		int min{}, max{};
-		int min{}, max{};
-		tmp_1.read((char*)&var_1, sizeof(int));
-		tmp_2.read((char*)&var_2, sizeof(int));
-		min = var_1 < var_2 ? var_1 : var_2;
-		max = var_1 < var_2 ? var_2 : var_1;
-		min_file = var_1 < var_2 ? 1 : 2;
-		for (size_t i = 0; left + rigth < 2 * ser; i++)
-		{
-			file.write((char*)&min, sizeof(int));
-
-			if (min_file == 1)
+			if (tmp_1.length() < tmp_2.length())
 			{
-				left++;
-				if (i
-					tmp_1.read((char*)&var_1, sizeof(int));
+				tmp_1.push_back(file[j]);
 			}
 			else
 			{
-				rigth++;
-				tmp_2.read((char*)&var_2, sizeof(int));
+				tmp_2.push_back(file[j]);
 			}
 		}
-
-		/*int var_1{}, var_2{};
-		int min_file = 0;
-		int min{}, max{};
-		tmp_1.read((char*)&var_1, sizeof(int));
-		tmp_2.read((char*)&var_2, sizeof(int));
-		min = var_1 < var_2 ? var_1 : var_2;
-		max = var_1 < var_2 ? var_2 : var_1;
-		min_file = var_1 < var_2 ? 1 : 2;
-		for (size_t i = 1; i < ser * 2; i++)
+		if (enable_steps)
 		{
-			file.write((char*)&min, sizeof(int));
-			
-			if (ser != 1)
+			std::cout << "ser: " << ser << std::endl;
+			std::cout << "tmp1: ";
+			for (size_t i = 0; i < tmp_1.length(); i++)
 			{
-				if (min_file == 1 && )
+				std::cout << (i % ser == 0 ? " | " : " ") << tmp_1[i];
+			}
+			std::cout << std::endl;
+			std::cout << "tmp2: ";
+			for (size_t i = 0; i < tmp_2.length(); i++)
+			{
+				std::cout << (i % ser == 0 ? " | " : " ") << tmp_2[i];
+			}
+			std::cout << std::endl;
+		}
+
+		/*магия с объединением в результирующий файл*/
+		file.clear();
+		size_t count_ser_file{ std::max(tmp_1.length() / ser + (tmp_1.length() % ser != 0 ? 1 : 0), tmp_2.length() / ser + (tmp_2.length() % ser != 0 ? 1 : 0)) };
+		for (size_t i = 0; i < count_ser_file; i++)
+		{
+			size_t l1{ tmp_1.length() }, l2{ tmp_2.length() };
+			size_t left_length{ i * ser + ser - 1 >= tmp_1.length() ? tmp_1.length() - i * ser : ser },
+				  right_length{ i * ser + ser - 1 >= tmp_2.length() ? tmp_2.length() - i * ser : ser };
+			size_t left_index{ i * ser }, right_index{ i * ser };
+			/*Сливаем массивы, пока один не закончится*/
+			while (left_length && right_length) 
+			{
+				if (tmp_1[left_index] < tmp_2[right_index]) 
 				{
-					tmp_1.read((char*)&var_1, sizeof(int));
+					file.push_back(tmp_1[left_index]);
+					if (enable_steps)
+						std::cout << tmp_1[left_index] << " ";
+					left_index++;
+					--left_length;
 				}
-				else
+				else 
 				{
-					tmp_2.read((char*)&var_2, sizeof(int));
+					file.push_back(tmp_2[right_index]);
+					if (enable_steps)
+						std::cout << tmp_2[right_index] << " ";
+					right_index++;
+					right_length--;
 				}
-				min = var_1 < var_2 ? var_1 : var_2;
-				max = var_1 < var_2 ? var_2 : var_1;
-				min_file = var_1 < var_2 ? 1 : 2;
+			}
+			/*Если закончился первый массив*/
+			if (left_length == 0) 
+			{
+				for (int i = 0; i < right_length; ++i)
+				{
+					file.push_back(tmp_2[right_index]);
+					if (enable_steps)
+						std::cout << tmp_2[right_index] << " ";
+					right_index++;
+				}
+			}
+			else /*Если закончился второй массив*/
+			{
+				for (int i = 0; i < left_length; ++i) 
+				{
+					file.push_back(tmp_1[left_index]);
+					if (enable_steps)
+						std::cout << tmp_1[left_index] << " ";
+					left_index++;
+				}
 			}
 		}
-		file.write((char*)&max, sizeof(int));*/
-		file.seekg(0);
-		std::cout << "file ";
-		for (size_t i = 0; i < length; i++)
+		if (enable_steps)
 		{
-			int var;
-			file.read((char*)&var, sizeof(int));
-			std::cout << var << " ";
-		}
-		std::cout << "\n\n";
-		file.seekg(0);
+			std::cout << std::endl;
 
+			std::cout << "file: ";
+			for (size_t i = 0; i < file.length(); i++)
+			{
+				std::cout << file[i] << " ";
+			}
+			std::cout << std::endl;
+		}
+
+		/*увеличиваем серию, обнуляем временные файлики*/
 		ser *= 2;
+		tmp_1.clear();
+		tmp_2.clear();
 	}
 
-	file.seekg(0);
-	for (size_t i = 0; i < length; i++)
+	std::cout << "File sorting finished, " << t.elapsed()<<"seconds: " << std::endl;
+	if (enable_mas)
 	{
-		int var;
-		file.read((char*)&var, sizeof(int));
-		std::cout << var << std::endl;
+		for (size_t i = 0; i < file.length(); i++)
+		{
+			std::cout << file[i] << " ";
+		}
+		std::cout << std::endl;
 	}
-	
 
 	return 1;
 }

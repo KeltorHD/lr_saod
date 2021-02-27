@@ -144,6 +144,9 @@
   <ItemGroup>
     <None Include="sort.bin" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="file_array.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

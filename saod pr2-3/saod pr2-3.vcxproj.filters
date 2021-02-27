@@ -24,4 +24,9 @@
       <Filter>Файлы ресурсов</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="file_array.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>
