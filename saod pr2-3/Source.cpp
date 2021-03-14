@@ -37,9 +37,9 @@ int main()
 	File_array<int> file("sort.bin");
 	File_array<int> tmp_1("tmp1.bin");
 	File_array<int> tmp_2("tmp2.bin");
-	const int length{ 10000 };
-	bool enable_steps{ false };
-	bool enable_mas{ false };
+	const int length{ 10 };
+	bool enable_steps{ true };
+	bool enable_mas{ true };
 
 	file.resize(length);
 	tmp_1.clear();
@@ -115,13 +115,13 @@ int main()
 
 		/*магия с объединением в результирующий файл*/
 		file.clear();
-		size_t count_ser_file{ std::max(tmp_1.length() / ser + (tmp_1.length() % ser != 0 ? 1 : 0), tmp_2.length() / ser + (tmp_2.length() % ser != 0 ? 1 : 0)) };
+		auto count_ser_file{ std::max(tmp_1.length() / ser + (tmp_1.length() % ser != 0 ? 1 : 0), tmp_2.length() / ser + (tmp_2.length() % ser != 0 ? 1 : 0)) };
 		for (size_t i = 0; i < count_ser_file; i++)
 		{
-			size_t l1{ tmp_1.length() }, l2{ tmp_2.length() };
-			size_t left_length{ i * ser + ser - 1 >= tmp_1.length() ? tmp_1.length() - i * ser : ser },
+			unsigned long long l1{ tmp_1.length() }, l2{ tmp_2.length() };
+			unsigned long long left_length{ i * ser + ser - 1 >= tmp_1.length() ? tmp_1.length() - i * ser : ser },
 				  right_length{ i * ser + ser - 1 >= tmp_2.length() ? tmp_2.length() - i * ser : ser };
-			size_t left_index{ i * ser }, right_index{ i * ser };
+			unsigned long long left_index{ i * ser }, right_index{ i * ser };
 			/*Сливаем массивы, пока один не закончится*/
 			while (left_length && right_length) 
 			{
