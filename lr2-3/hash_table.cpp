@@ -153,7 +153,6 @@ bool Hash_table::correct_collision_find(size_t& key, std::string to_find)
         /*находим значение по новому ключу*/
         this->file.seekg((key + 1) * (this->data_size + this->id_size), std::ios_base::beg);
         this->file.read(&tmp[0], this->id_size);
-
         if (tmp == empty) /*если €чейка не зан€та, значит искомой записи нет*/
         {
             return false;
