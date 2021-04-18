@@ -63,13 +63,16 @@ int main()
 	while (!st.empty())
 	{
 		int v = st.top();
+		std::cout << "Вершина: " << v << std::endl;
 		int i;
-		for (i = 0; i < count_vertex; ++i) /*находим степень вершины v*/
+		for (i = 0; i < count_vertex; ++i) /*находим первое попавшееся ребро*/
 			if (graph[v][i])
 				break;
 
+		std::cout << "I: " << i << std::endl;
 		if (i == count_vertex) /*если степень вершины = 0, ребер с этой вершиной нет*/
 		{
+			std::cout << "Добавляем в результат" << std::endl;
 			res.push_back(v); /*добавляем в результат*/
 			st.pop(); /*удаляем из стека*/
 		}
@@ -78,7 +81,9 @@ int main()
 			--graph[v][i]; /*удаляем ребро, выходящее из v*/
 			--graph[i][v];
 			st.push(i); /*второй конец ребра кладем в st*/
+			std::cout << "Удаляем ребро " << v << ":" << i << std::endl;
 		}
+		std::cout << "-------------------" << std::endl;
 	}
 
 
